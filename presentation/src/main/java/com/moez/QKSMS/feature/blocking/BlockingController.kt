@@ -29,6 +29,7 @@ import com.moez.QKSMS.common.util.extensions.animateLayoutChanges
 import com.moez.QKSMS.feature.blocking.manager.BlockingManagerController
 import com.moez.QKSMS.feature.blocking.messages.BlockedMessagesController
 import com.moez.QKSMS.feature.blocking.numbers.BlockedNumbersController
+import com.moez.QKSMS.feature.blocking.regexps.BlockedRegexpsController
 import com.moez.QKSMS.injection.appComponent
 import kotlinx.android.synthetic.main.blocking_controller.*
 import kotlinx.android.synthetic.main.settings_switch_widget.view.*
@@ -38,6 +39,7 @@ class BlockingController : QkController<BlockingView, BlockingState, BlockingPre
 
     override val blockingManagerIntent by lazy { blockingManager.clicks() }
     override val blockedNumbersIntent by lazy { blockedNumbers.clicks() }
+    override val blockedRegexpsIntent by lazy { blockedRegexps.clicks() }
     override val blockedMessagesIntent by lazy { blockedMessages.clicks() }
     override val dropClickedIntent by lazy { drop.clicks() }
 
@@ -70,6 +72,12 @@ class BlockingController : QkController<BlockingView, BlockingState, BlockingPre
 
     override fun openBlockedNumbers() {
         router.pushController(RouterTransaction.with(BlockedNumbersController())
+                .pushChangeHandler(QkChangeHandler())
+                .popChangeHandler(QkChangeHandler()))
+    }
+
+    override fun openBlockedRegexps() {
+        router.pushController(RouterTransaction.with(BlockedRegexpsController())
                 .pushChangeHandler(QkChangeHandler())
                 .popChangeHandler(QkChangeHandler()))
     }

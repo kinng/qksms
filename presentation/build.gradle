@@ -70,6 +70,14 @@ android {
         noAnalytics { dimension "analytics" }
     }
 
+    viewBinding {
+        enabled = true
+    }
+
+    dataBinding {
+        enabled = true
+    }
+    
     if (System.getenv("CI") == "true") {
         signingConfigs.release.storeFile = file("../keystore")
         signingConfigs.release.storePassword = System.getenv("keystore_password")
