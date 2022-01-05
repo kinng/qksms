@@ -57,9 +57,18 @@ class ReceiveMms @Inject constructor(
                     // to check if it should be blocked after we've pulled it into realm. If it
                     // turns out that it should be dropped, then delete it
                     // TODO Don't store blocked messages in the first place
-                    val action = blockingClient.shouldBlock(message.address).blockingGet()
+                    var action = blockingClient.shouldBlock(message.address).blockingGet()
                     val shouldDrop = prefs.drop.get()
                     Timber.v("block=$action, drop=$shouldDrop")
+
+                    val body: String = message.parts
+                        .mapNotNull { p -> p.text }
+                        .reduce { body, new -> body + new }
+
+                    if (action !is BlockingClient.Action.Block) {
+                        // Check if we should block it because of its content
+                        action = blockingClient.getActionFromContent(body).blockingGet()
+                    }
 
                     if (action is BlockingClient.Action.Block && shouldDrop) {
                         messageRepo.deleteMessages(message.id)
