@@ -43,8 +43,10 @@ class PhoneNumberUtils @Inject constructor(context: Context) {
             return true
         }
 
-        val regex = Regex(first)
-        if (regex.containsMatchIn(second)) return true
+        try {
+            val regex = Regex(first)
+            if (regex.containsMatchIn(second)) return true
+        } catch(e: Exception)  {}
 
         if (PhoneNumberUtils.compare(first, second)) {
             val matchType = phoneNumberUtil.isNumberMatch(first, second)
