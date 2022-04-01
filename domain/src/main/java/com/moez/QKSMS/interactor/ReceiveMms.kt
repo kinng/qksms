@@ -43,6 +43,7 @@ class ReceiveMms @Inject constructor(
 ) : Interactor<Uri>() {
 
     override fun buildObservable(params: Uri): Flowable<*> {
+
         return Flowable.just(params)
                 .mapNotNull(syncManager::syncMessage) // Sync the message
                 .doOnNext { message ->
@@ -58,16 +59,27 @@ class ReceiveMms @Inject constructor(
                     // turns out that it should be dropped, then delete it
                     // TODO Don't store blocked messages in the first place
                     var action = blockingClient.shouldBlock(message.address).blockingGet()
+
                     val shouldDrop = prefs.drop.get()
+
                     Timber.v("block=$action, drop=$shouldDrop")
 
                     val body: String = message.parts
                         .mapNotNull { p -> p.text }
                         .reduce { body, new -> body + new }
-
                     if (action !is BlockingClient.Action.Block) {
                         // Check if we should block it because of its content
                         action = blockingClient.getActionFromContent(body).blockingGet()
+                    }
+
+                    // block by recipients list using regex pattern defined in phone number
+                    if (action !is BlockingClient.Action.Block) {
+                        conversationRepo.updateConversations(message.threadId)
+                        var conversation = conversationRepo.getOrCreateConversation(message.threadId)
+                        if (conversation != null) {
+                            var recipients = conversation.getJoinedRecipentsAddress()
+                            action = blockingClient.shouldBlock(recipients).blockingGet()
+                        }
                     }
 
                     if (action is BlockingClient.Action.Block && shouldDrop) {

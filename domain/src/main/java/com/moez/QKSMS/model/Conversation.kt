@@ -44,7 +44,14 @@ open class Conversation(
     val me: Boolean get() = lastMessage?.isMe() == true
 
     fun getTitle(): String {
-        return name.takeIf { it.isNotBlank() } ?: recipients.joinToString { recipient -> recipient.getDisplayName() }
+        return name.takeIf { it.isNotBlank() } ?: getJoinedRecipentsName()
     }
 
+    fun getJoinedRecipentsName(): String {
+        return recipients.joinToString { recipient -> recipient.getDisplayName() }
+    }
+
+    fun getJoinedRecipentsAddress(): String {
+        return recipients.joinToString { recipient -> recipient.address }
+    }
 }
