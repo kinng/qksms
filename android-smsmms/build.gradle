@@ -27,11 +27,11 @@ android {
         targetSdkVersion 25
     }
 
-    lintOptions {
-        abortOnError false
-    }
 
     useLibrary 'org.apache.http.legacy'
+    lint {
+        abortOnError false
+    }
 }
 
 dependencies {

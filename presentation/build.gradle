@@ -24,7 +24,6 @@ apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 29
-    buildToolsVersion "29.0.3"
     flavorDimensions "analytics"
 
     defaultConfig {
@@ -61,9 +60,6 @@ android {
         jvmTarget = "1.8"
     }
 
-    lintOptions {
-        abortOnError false
-    }
 
     productFlavors {
         withAnalytics { dimension "analytics" }
@@ -77,7 +73,10 @@ android {
     dataBinding {
         enabled = true
     }
-    
+    lint {
+        abortOnError false
+    }
+
     if (System.getenv("CI") == "true") {
         signingConfigs.release.storeFile = file("../keystore")
         signingConfigs.release.storePassword = System.getenv("keystore_password")
